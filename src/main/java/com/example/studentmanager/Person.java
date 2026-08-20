@@ -1,10 +1,10 @@
 package com.example.studentmanager;
 
-public class Person {
+public abstract class Person {
   private final String name;
   private int age;
 
-  Person(String name, int age) {
+  protected Person(String name, int age) {
     this.name = name;
     this.age = age;
   }
@@ -21,8 +21,6 @@ public class Person {
     this.age = age;
   }
 
-  public String getRole() {
-    return "人员";
-  }
+  public abstract String getRole();
 
 }

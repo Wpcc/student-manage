@@ -1,7 +1,7 @@
 package com.example.studentmanager;
 
 /** 表示一个学生。 */
-public class Student extends Person {
+public class Student extends Person implements Printable {
   private final int id;
 
   public Student(int id, String name, int age) {
@@ -21,5 +21,10 @@ public class Student extends Person {
   @Override
   public String toString() {
     return "Student{id=%d, name='%s', age=%d}".formatted(id, getName(), getAge());
+  }
+
+  @Override
+  public String getSummary() {
+    return "%s：%s, 学号：%d, 年龄：%d".formatted(getRole(), getName(), id, getAge());
   }
 }
