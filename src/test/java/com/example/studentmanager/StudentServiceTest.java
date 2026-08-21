@@ -18,7 +18,7 @@ public class StudentServiceTest {
     Student student = new Student(1001, "张三", 18);
     studentService.addStudent(student);
 
-    Student foundStudent = studentService.findById(1001);
+    Student foundStudent = studentService.findById(1001).orElseThrow();
 
     assertNotNull(foundStudent);
     assertEquals(1001, foundStudent.getId());
@@ -54,8 +54,10 @@ public class StudentServiceTest {
 
     assertTrue(studentService.changeAge(1001, 22));
 
-    Student foundStudent = studentService.findById(1001);
+    Student foundStudent = studentService.findById(1001).orElseThrow();
     assertEquals(22, foundStudent.getAge());
+
+    assertTrue(studentService.findById(9999).isEmpty());
   }
 
   @Test

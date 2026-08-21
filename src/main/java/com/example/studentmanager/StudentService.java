@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ public class StudentService {
   private static final Logger LOGGER = LoggerFactory.getLogger(StudentService.class);
 
   public void addStudent(Student student) {
-    if (findById(student.getId()) != null) {
+    if (findById(student.getId()).isPresent()) {
       LOGGER.warn("发现重复学号：id={}", student.getId());
       throw new DuplicateStudentException(student.getId());
     }
@@ -27,8 +28,8 @@ public class StudentService {
     return new ArrayList<>(students.values());
   }
 
-  public Student findById(int id) {
-    return students.get(id);
+  public Optional<Student> findById(int id) {
+    return Optional.ofNullable(students.get(id));
   }
 
   public boolean deleteById(int id) {
@@ -52,14 +53,16 @@ public class StudentService {
   }
 
   public boolean changeAge(int id, int age) {
-    Student student = findById(id);
-    if (student != null) {
-      LOGGER.info("修改年龄成功：id={},age={}", id, age);
-      student.setAge(age);
-      return true;
-    }
-    LOGGER.warn("修改失败，学生不存在：id={}", id);
-    return false;
+    return findById(id)
+        .map(student -> {
+          student.setAge(age);
+          LOGGER.info("修改年龄成功：id={},age={}", id, age);
+          return true;
+        })
+        .orElseGet(() -> {
+          LOGGER.warn("修改失败，学生不存在：id={}", id);
+          return false;
+        });
   }
 
   public List<Student> findAdults() {
