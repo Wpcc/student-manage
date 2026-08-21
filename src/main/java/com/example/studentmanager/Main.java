@@ -12,7 +12,7 @@ public class Main {
   private static final Scanner SCANNER = new Scanner(System.in,
       Charset.forName(System.getProperty("native.encoding")));
   private static final StudentService STUDENT_SERVICE = new StudentService();
-  private static final Path DATA_FILE = Path.of("students.txt");
+  private static final Path DATA_FILE = Path.of(AppConfig.getRequired("student.data.file"));
 
   public static void main(String[] args) {
     boolean running = true;

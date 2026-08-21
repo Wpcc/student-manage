@@ -2,3 +2,5 @@ out/
 *.class
 students.txt
 .vscode/
+target/
+logs/
