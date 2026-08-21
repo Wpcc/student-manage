@@ -40,7 +40,7 @@ src/main/java/com/example/studentmanager/
 
 ## 运行方式
 
-需要 JDK 17 或更高版本。
+需要 JDK 21 或更高版本。
 
 ```powershell
 javac -encoding UTF-8 -d out src/main/java/com/example/studentmanager/*.java

@@ -1,6 +1,7 @@
 package com.example.studentmanager;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,7 +9,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-  private static final Scanner SCANNER = new Scanner(System.in);
+  private static final Scanner SCANNER = new Scanner(System.in,
+      Charset.forName(System.getProperty("native.encoding")));
   private static final StudentService STUDENT_SERVICE = new StudentService();
   private static final Path DATA_FILE = Path.of("students.txt");
 
@@ -32,6 +34,10 @@ public class Main {
         case "4" -> deleteStudentById();
         case "5" -> findStudentsByKeyword();
         case "6" -> changeStudentAge();
+        case "7" -> listAdultStudents();
+        case "8" -> listStudentsOrderByAge();
+        case "9" -> listStudentsOrderByName();
+        case "10" -> listStudentsDescendByAge();
         case "0" -> running = false;
         default -> System.out.println("无效选项，请重新输入。");
       }
@@ -54,6 +60,10 @@ public class Main {
     System.out.println("4. 按学号删除学生");
     System.out.println("5. 按姓名搜索学生");
     System.out.println("6. 按学号修改年龄");
+    System.out.println("7. 查看成年学生");
+    System.out.println("8. 按年龄升序查看学生");
+    System.out.println("9. 按名字升序查看学生");
+    System.out.println("10. 按年龄降序查看学生");
     System.out.println("0. 退出");
     System.out.print("请选择：");
   }
@@ -197,5 +207,28 @@ public class Main {
     }).toList();
 
     Files.write(DATA_FILE, lines, StandardCharsets.UTF_8);
+  }
+
+  private static void listAdultStudents() {
+    List<Student> students = STUDENT_SERVICE.findAdults();
+    printStudents(students);
+  }
+
+  private static void listStudentsOrderByAge() {
+    StudentSortStrategy strategy = new AgeAscendingStrategy();
+    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    printStudents(students);
+  }
+
+  private static void listStudentsDescendByAge() {
+    StudentSortStrategy strategy = new AgeDescendingStrategy();
+    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    printStudents(students);
+  }
+
+  private static void listStudentsOrderByName() {
+    StudentSortStrategy strategy = new NameAscendingStrategy();
+    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    printStudents(students);
   }
 }

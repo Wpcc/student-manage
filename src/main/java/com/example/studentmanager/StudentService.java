@@ -47,4 +47,16 @@ public class StudentService {
     }
     return false;
   }
+
+  public List<Student> findAdults() {
+    return students.values()
+        .stream()
+        .filter(student -> student.getAge() >= 18)
+        .toList();
+  }
+
+  public List<Student> findAllOrder(StudentSortStrategy strategy) {
+    List<Student> students = findAll();
+    return strategy.sort(students);
+  }
 }
