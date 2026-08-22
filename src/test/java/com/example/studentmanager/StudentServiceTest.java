@@ -78,4 +78,32 @@ public class StudentServiceTest {
     assertEquals(1002, adultStudents.get(0).getId());
   }
 
+  @Test
+  void shouldRejectNonPositiveStudentId() {
+    assertThrows(IllegalArgumentException.class,
+        () -> new Student(0, "张三", 18));
+  }
+
+  @Test
+  void shouldRejectBlankStudentName() {
+    assertThrows(IllegalArgumentException.class,
+        () -> new Student(1001, "  ", 18));
+  }
+
+  @Test
+  void shouldRejectAgeOutsideValidRange() {
+    assertThrows(IllegalArgumentException.class,
+        () -> new Student(1001, "张三", 151));
+  }
+
+  @Test
+  void shouldRejectInvalidAgeWhenChangingStudentAge() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 18));
+
+    assertThrows(IllegalArgumentException.class,
+        () -> studentService.changeAge(1001, 151));
+    assertEquals(18, studentService.findById(1001).orElseThrow().getAge());
+  }
+
 }

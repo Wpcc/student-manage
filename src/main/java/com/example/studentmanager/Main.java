@@ -78,6 +78,8 @@ public class Main {
       System.out.println("新增成功。");
     } catch (DuplicateStudentException e) {
       System.out.println(e.getMessage());
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
     }
   }
 
@@ -154,13 +156,18 @@ public class Main {
   private static void changeStudentAge() {
     int id = readPositiveInt("请输入学号：");
     int age = readPositiveInt("请输入年龄：");
-    boolean hasChangeAge = STUDENT_SERVICE.changeAge(id, age);
 
-    if (hasChangeAge) {
-      System.out.println("更新年龄，修改成功");
-    } else {
-      System.out.println("未找到该学生");
+    try {
+      boolean hasChangeAge = STUDENT_SERVICE.changeAge(id, age);
+      if (hasChangeAge) {
+        System.out.println("更新年龄，修改成功");
+      } else {
+        System.out.println("未找到该学生");
+      }
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
     }
+
   }
 
   private static void printStudents(List<Student> students) {
