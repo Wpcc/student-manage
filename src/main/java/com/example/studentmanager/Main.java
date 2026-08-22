@@ -123,13 +123,14 @@ public class Main {
 
   private static void findStudentById() {
     int id = readPositiveInt("请输入学号：");
-    Student student = STUDENT_SERVICE.findById(id);
+    STUDENT_SERVICE.findById(id).ifPresentOrElse(
+        student -> {
+          System.out.println("找到学生：" + student);
+        },
+        () -> {
+          System.out.println("未找到该学生。");
+        });
 
-    if (student != null) {
-      System.out.println("找到学生：" + student);
-    } else {
-      System.out.println("未找到该学生。");
-    }
   }
 
   private static void deleteStudentById() {
