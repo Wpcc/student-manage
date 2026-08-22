@@ -8,11 +8,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Main {
   private static final Scanner SCANNER = new Scanner(System.in,
       Charset.forName(System.getProperty("native.encoding")));
   private static final StudentService STUDENT_SERVICE = new StudentService();
   private static final Path DATA_FILE = Path.of(AppConfig.getRequired("student.data.file"));
+  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   public static void main(String[] args) {
     boolean running = true;
@@ -77,6 +81,8 @@ public class Main {
       STUDENT_SERVICE.addStudent(new Student(id, name, age));
       System.out.println("新增成功。");
     } catch (DuplicateStudentException e) {
+      System.out.println(e.getMessage());
+    } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
     }
   }
@@ -154,13 +160,18 @@ public class Main {
   private static void changeStudentAge() {
     int id = readPositiveInt("请输入学号：");
     int age = readPositiveInt("请输入年龄：");
-    boolean hasChangeAge = STUDENT_SERVICE.changeAge(id, age);
 
-    if (hasChangeAge) {
-      System.out.println("更新年龄，修改成功");
-    } else {
-      System.out.println("未找到该学生");
+    try {
+      boolean hasChangeAge = STUDENT_SERVICE.changeAge(id, age);
+      if (hasChangeAge) {
+        System.out.println("更新年龄，修改成功");
+      } else {
+        System.out.println("未找到该学生");
+      }
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
     }
+
   }
 
   private static void printStudents(List<Student> students) {
@@ -184,14 +195,26 @@ public class Main {
         continue;
       }
 
-      String[] parts = line.split(",");
+      try {
+        String[] parts = line.split(",", -1);
 
-      int id = Integer.parseInt(parts[0]);
-      String name = parts[1];
-      int age = Integer.parseInt(parts[2]);
+        if (parts.length != 3) {
+          throw new IllegalArgumentException(
+              "学生数据格式应为：学号,姓名,年龄");
+        }
 
-      Student student = new Student(id, name, age);
-      STUDENT_SERVICE.addStudent(student);
+        int id = Integer.parseInt(parts[0]);
+        String name = parts[1];
+        int age = Integer.parseInt(parts[2]);
+
+        Student student = new Student(id, name, age);
+        STUDENT_SERVICE.addStudent(student);
+      } catch (IllegalArgumentException e) {
+        LOGGER.warn(
+            "忽略非法学生数据：{}，原因：{}",
+            line,
+            e.getMessage());
+      }
     }
 
   }
