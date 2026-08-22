@@ -106,4 +106,18 @@ public class StudentServiceTest {
     assertEquals(18, studentService.findById(1001).orElseThrow().getAge());
   }
 
+  @Test
+  void shouldSortStudentsByAgeAscendingWithGenericStrategy() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 20));
+    studentService.addStudent(new Student(1002, "李四", 18));
+    studentService.addStudent(new Student(1003, "王五", 19));
+
+    SortStrategy<Student> strategy = new AgeAscendingStrategy();
+    List<Student> sortedStudents = studentService.findAllOrder(strategy);
+
+    assertEquals(List.of(1002, 1003, 1001),
+        sortedStudents.stream().map(Student::getId).toList());
+  }
+
 }

@@ -3,7 +3,7 @@ package com.example.studentmanager;
 import java.util.Comparator;
 import java.util.List;
 
-public class AgeAscendingStrategy implements StudentSortStrategy {
+public class AgeAscendingStrategy implements SortStrategy<Student> {
   @Override
   public List<Student> sort(List<Student> students) {
     return students

@@ -239,19 +239,19 @@ public class Main {
   }
 
   private static void listStudentsOrderByAge() {
-    StudentSortStrategy strategy = new AgeAscendingStrategy();
+    SortStrategy<Student> strategy = new AgeAscendingStrategy();
     List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
     printStudents(students);
   }
 
   private static void listStudentsDescendByAge() {
-    StudentSortStrategy strategy = new AgeDescendingStrategy();
+    SortStrategy<Student> strategy = new AgeDescendingStrategy();
     List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
     printStudents(students);
   }
 
   private static void listStudentsOrderByName() {
-    StudentSortStrategy strategy = new NameAscendingStrategy();
+    SortStrategy<Student> strategy = new NameAscendingStrategy();
     List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
     printStudents(students);
   }

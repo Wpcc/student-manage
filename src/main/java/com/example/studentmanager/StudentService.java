@@ -72,7 +72,7 @@ public class StudentService {
         .toList();
   }
 
-  public List<Student> findAllOrder(StudentSortStrategy strategy) {
+  public List<Student> findAllOrder(SortStrategy<Student> strategy) {
     List<Student> students = findAll();
     return strategy.sort(students);
   }
