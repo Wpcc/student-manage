@@ -1,6 +1,7 @@
 package com.example.studentmanager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,20 @@ public class StudentService {
     return students.values()
         .stream()
         .filter(condition)
+        .toList();
+  }
+
+  public List<String> findTopAdultSummaries(int limit) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException();
+    }
+
+    return students.values()
+        .stream()
+        .filter(student -> student.getAge() >= 18)
+        .sorted(Comparator.comparingInt(Student::getAge).reversed())
+        .limit(limit)
+        .map(Student::getSummary)
         .toList();
   }
 

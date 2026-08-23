@@ -143,4 +143,27 @@ public class StudentServiceTest {
     assertEquals(1, studentService.findAdults().size());
   }
 
+  @Test
+  void shouldReturnOldestAdultStudentSummaries() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "小明", 17));
+    studentService.addStudent(new Student(1002, "张三", 20));
+    studentService.addStudent(new Student(1003, "李四", 22));
+    studentService.addStudent(new Student(1004, "王五", 30));
+
+    List<String> summaries = studentService.findTopAdultSummaries(2);
+
+    assertEquals(List.of(
+        "学生：王五, 学号：1004, 年龄：30",
+        "学生：李四, 学号：1003, 年龄：22"), summaries);
+  }
+
+  @Test
+  void shouldRejectNonPositiveLimitWhenFindingTopAdults() {
+    StudentService studentService = new StudentService();
+
+    assertThrows(IllegalArgumentException.class,
+        () -> studentService.findTopAdultSummaries(0));
+  }
+
 }

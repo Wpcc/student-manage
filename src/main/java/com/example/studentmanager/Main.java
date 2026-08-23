@@ -42,6 +42,7 @@ public class Main {
         case "8" -> listStudentsOrderByAge();
         case "9" -> listStudentsOrderByName();
         case "10" -> listStudentsDescendByAge();
+        case "11" -> ListStudentsOldByAge();
         case "0" -> running = false;
         default -> System.out.println("无效选项，请重新输入。");
       }
@@ -68,6 +69,7 @@ public class Main {
     System.out.println("8. 按年龄升序查看学生");
     System.out.println("9. 按名字升序查看学生");
     System.out.println("10. 按年龄降序查看学生");
+    System.out.println("11. 查看年龄最大的 N 名成年学生");
     System.out.println("0. 退出");
     System.out.print("请选择：");
   }
@@ -248,6 +250,12 @@ public class Main {
     SortStrategy<Student> strategy = new AgeDescendingStrategy();
     List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
     printStudents(students);
+  }
+
+  private static void ListStudentsOldByAge() {
+    int limit = readPositiveInt("需要读取最大年龄学生的数量：");
+    List<String> studentsSummary = STUDENT_SERVICE.findTopAdultSummaries(limit);
+    System.out.println(studentsSummary);
   }
 
   private static void listStudentsOrderByName() {
