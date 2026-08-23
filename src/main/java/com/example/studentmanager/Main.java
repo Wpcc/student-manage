@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public class Main {
         case "9" -> listStudentsOrderByName();
         case "10" -> listStudentsDescendByAge();
         case "11" -> ListStudentsOldByAge();
+        case "12" -> groupStudentsByAge();
+        case "13" -> partitionStudentsByAdult();
         case "0" -> running = false;
         default -> System.out.println("无效选项，请重新输入。");
       }
@@ -70,6 +73,8 @@ public class Main {
     System.out.println("9. 按名字升序查看学生");
     System.out.println("10. 按年龄降序查看学生");
     System.out.println("11. 查看年龄最大的 N 名成年学生");
+    System.out.println("12. 按年龄分组查看学生");
+    System.out.println("13. 按成年状态分组查看学生");
     System.out.println("0. 退出");
     System.out.print("请选择：");
   }
@@ -262,5 +267,23 @@ public class Main {
     SortStrategy<Student> strategy = new NameAscendingStrategy();
     List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
     printStudents(students);
+  }
+
+  private static void groupStudentsByAge() {
+    Map<Integer, List<Student>> students = STUDENT_SERVICE.groupStudentsByAge();
+    students.forEach((age, studentList) -> {
+      System.out.println(age + " 岁：");
+
+      studentList.forEach(System.out::println);
+    });
+  }
+
+  private static void partitionStudentsByAdult() {
+    Map<Boolean, List<Student>> result = STUDENT_SERVICE.partitionStudentsByAdult();
+
+    result.forEach((isAdult, studentList) -> {
+      String label = isAdult ? "成年学生" : "未成年学生";
+      System.out.println(label + "：" + studentList);
+    });
   }
 }

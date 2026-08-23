@@ -3,6 +3,7 @@ package com.example.studentmanager;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -164,6 +165,45 @@ public class StudentServiceTest {
 
     assertThrows(IllegalArgumentException.class,
         () -> studentService.findTopAdultSummaries(0));
+  }
+
+  @Test
+  void shouldGroupStudentsByAge() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 18));
+    studentService.addStudent(new Student(1002, "李四", 18));
+    studentService.addStudent(new Student(1003, "王五", 20));
+
+    Map<Integer, List<Student>> studentsByAge = studentService.groupStudentsByAge();
+
+    assertEquals(2, studentsByAge.get(18).size());
+    assertEquals(1, studentsByAge.get(20).size());
+  }
+
+  @Test
+  void shouldPartitionStudentsByAdultStatus() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 17));
+    studentService.addStudent(new Student(1002, "李四", 18));
+
+    Map<Boolean, List<Student>> studentsByAdultStatus =
+        studentService.partitionStudentsByAdult();
+
+    assertEquals(1, studentsByAdultStatus.get(false).size());
+    assertEquals(1001, studentsByAdultStatus.get(false).get(0).getId());
+    assertEquals(1, studentsByAdultStatus.get(true).size());
+    assertEquals(1002, studentsByAdultStatus.get(true).get(0).getId());
+  }
+
+  @Test
+  void shouldReturnEmptyMinorGroupWhenAllStudentsAreAdults() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 18));
+
+    Map<Boolean, List<Student>> studentsByAdultStatus =
+        studentService.partitionStudentsByAdult();
+
+    assertTrue(studentsByAdultStatus.get(false).isEmpty());
   }
 
 }

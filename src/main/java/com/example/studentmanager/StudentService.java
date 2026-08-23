@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +90,18 @@ public class StudentService {
         .limit(limit)
         .map(Student::getSummary)
         .toList();
+  }
+
+  public Map<Integer, List<Student>> groupStudentsByAge() {
+    return students.values()
+        .stream()
+        .collect(Collectors.groupingBy(Student::getAge));
+  }
+
+  public Map<Boolean, List<Student>> partitionStudentsByAdult() {
+    return students.values()
+        .stream()
+        .collect(Collectors.partitioningBy(student -> student.getAge() >= 18));
   }
 
 }
