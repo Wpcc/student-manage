@@ -249,13 +249,13 @@ public class Main {
 
   private static void listStudentsOrderByAge() {
     SortStrategy<Student> strategy = new AgeAscendingStrategy();
-    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    List<Student> students = STUDENT_SERVICE.findAllSorted(strategy);
     printStudents(students);
   }
 
   private static void listStudentsDescendByAge() {
     SortStrategy<Student> strategy = new AgeDescendingStrategy();
-    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    List<Student> students = STUDENT_SERVICE.findAllSorted(strategy);
     printStudents(students);
   }
 
@@ -267,7 +267,7 @@ public class Main {
 
   private static void listStudentsOrderByName() {
     SortStrategy<Student> strategy = new NameAscendingStrategy();
-    List<Student> students = STUDENT_SERVICE.findAllOrder(strategy);
+    List<Student> students = STUDENT_SERVICE.findAllSorted(strategy);
     printStudents(students);
   }
 

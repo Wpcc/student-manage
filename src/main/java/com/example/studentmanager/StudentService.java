@@ -67,9 +67,14 @@ public class StudentService {
     return findByCondition(student -> student.getAge() >= 18);
   }
 
-  public List<Student> findAllOrder(SortStrategy<Student> strategy) {
+  public List<Student> findAllSorted(SortStrategy<Student> strategy) {
     List<Student> students = findAll();
     return strategy.sort(students);
+  }
+
+  @Deprecated(since = "2.0", forRemoval = false)
+  public List<Student> findAllOrder(SortStrategy<Student> strategy) {
+    return findAllSorted(strategy);
   }
 
   public List<Student> findByCondition(Predicate<Student> condition) {
