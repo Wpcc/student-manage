@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ public class Main {
         case "12" -> groupStudentsByAge();
         case "13" -> partitionStudentsByAdult();
         case "14" -> studentsStatistics();
+        case "15" -> studentsByReflection();
         case "0" -> running = false;
         default -> System.out.println("无效选项，请重新输入。");
       }
@@ -77,6 +79,7 @@ public class Main {
     System.out.println("12. 按年龄分组查看学生");
     System.out.println("13. 按成年状态分组查看学生");
     System.out.println("14. 查看学生年龄统计");
+    System.out.println("15. 使用反射查看学生字段");
     System.out.println("0. 退出");
     System.out.print("请选择：");
   }
@@ -298,6 +301,18 @@ public class Main {
     STUDENT_SERVICE.calculateAverageAge().ifPresentOrElse(
         average -> System.out.printf("学生平均年龄：%.2f%n", average),
         () -> System.out.println("暂无学生数据，无法计算平均年龄。"));
+
+  }
+
+  private static void studentsByReflection() {
+    int id = readPositiveInt("请输入学号：");
+    STUDENT_SERVICE.findById(id).ifPresentOrElse(
+        student -> {
+          System.out.println(ReflectionFormatter.formatAnnotatedFields(student));
+        },
+        () -> {
+          System.out.println("未找到该学生。");
+        });
 
   }
 
