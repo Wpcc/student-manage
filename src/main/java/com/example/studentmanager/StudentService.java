@@ -1,10 +1,14 @@
 package com.example.studentmanager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +47,7 @@ public class StudentService {
   }
 
   public List<Student> findByName(String keyword) {
-    List<Student> result = new ArrayList<>();
-    for (Student student : students.values()) {
-      if (student.getName().contains(keyword)) {
-        result.add(student);
-      }
-    }
-    return result;
+    return findByCondition(student -> student.getName().contains(keyword));
   }
 
   public boolean changeAge(int id, int age) {
@@ -66,15 +64,58 @@ public class StudentService {
   }
 
   public List<Student> findAdults() {
+    return findByCondition(student -> student.getAge() >= 18);
+  }
+
+  public List<Student> findAllOrder(SortStrategy<Student> strategy) {
+    List<Student> students = findAll();
+    return strategy.sort(students);
+  }
+
+  public List<Student> findByCondition(Predicate<Student> condition) {
     return students.values()
         .stream()
-        .filter(student -> student.getAge() >= 18)
+        .filter(condition)
         .toList();
   }
 
-  public List<Student> findAllOrder(StudentSortStrategy strategy) {
-    List<Student> students = findAll();
-    return strategy.sort(students);
+  public List<String> findTopAdultSummaries(int limit) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException();
+    }
+
+    return students.values()
+        .stream()
+        .filter(student -> student.getAge() >= 18)
+        .sorted(Comparator.comparingInt(Student::getAge).reversed())
+        .limit(limit)
+        .map(Student::getSummary)
+        .toList();
+  }
+
+  public Map<Integer, List<Student>> groupStudentsByAge() {
+    return students.values()
+        .stream()
+        .collect(Collectors.groupingBy(Student::getAge));
+  }
+
+  public Map<Boolean, List<Student>> partitionStudentsByAdult() {
+    return students.values()
+        .stream()
+        .collect(Collectors.partitioningBy(student -> student.getAge() >= 18));
+  }
+
+  public Optional<Student> findOldestStudent() {
+    return students.values()
+        .stream()
+        .max(Comparator.comparingInt(Student::getAge));
+  }
+
+  public OptionalDouble calculateAverageAge() {
+    return students.values()
+        .stream()
+        .mapToInt(Student::getAge)
+        .average();
   }
 
 }
