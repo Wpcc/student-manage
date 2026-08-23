@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,19 @@ public class StudentService {
     return students.values()
         .stream()
         .collect(Collectors.partitioningBy(student -> student.getAge() >= 18));
+  }
+
+  public Optional<Student> findOldestStudent() {
+    return students.values()
+        .stream()
+        .max(Comparator.comparingInt(Student::getAge));
+  }
+
+  public OptionalDouble calculateAverageAge() {
+    return students.values()
+        .stream()
+        .mapToInt(Student::getAge)
+        .average();
   }
 
 }

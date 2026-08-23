@@ -46,6 +46,7 @@ public class Main {
         case "11" -> ListStudentsOldByAge();
         case "12" -> groupStudentsByAge();
         case "13" -> partitionStudentsByAdult();
+        case "14" -> studentsStatistics();
         case "0" -> running = false;
         default -> System.out.println("无效选项，请重新输入。");
       }
@@ -75,6 +76,7 @@ public class Main {
     System.out.println("11. 查看年龄最大的 N 名成年学生");
     System.out.println("12. 按年龄分组查看学生");
     System.out.println("13. 按成年状态分组查看学生");
+    System.out.println("14. 查看学生年龄统计");
     System.out.println("0. 退出");
     System.out.print("请选择：");
   }
@@ -286,4 +288,17 @@ public class Main {
       System.out.println(label + "：" + studentList);
     });
   }
+
+  private static void studentsStatistics() {
+    STUDENT_SERVICE.findOldestStudent()
+        .ifPresentOrElse(
+            student -> System.out.println("年龄最大的学生：" + student),
+            () -> System.out.println("暂无学生数据。"));
+
+    STUDENT_SERVICE.calculateAverageAge().ifPresentOrElse(
+        average -> System.out.printf("学生平均年龄：%.2f%n", average),
+        () -> System.out.println("暂无学生数据，无法计算平均年龄。"));
+
+  }
+
 }

@@ -206,4 +206,25 @@ public class StudentServiceTest {
     assertTrue(studentsByAdultStatus.get(false).isEmpty());
   }
 
+  @Test
+  void shouldReturnEmptyAgeStatisticsWhenNoStudentsExist() {
+    StudentService studentService = new StudentService();
+
+    assertTrue(studentService.findOldestStudent().isEmpty());
+    assertTrue(studentService.calculateAverageAge().isEmpty());
+  }
+
+  @Test
+  void shouldCalculateOldestStudentAndAverageAge() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 18));
+    studentService.addStudent(new Student(1002, "李四", 20));
+    studentService.addStudent(new Student(1003, "王五", 22));
+
+    Student oldestStudent = studentService.findOldestStudent().orElseThrow();
+
+    assertEquals(22, oldestStudent.getAge());
+    assertEquals(20.0, studentService.calculateAverageAge().orElseThrow(), 0.001);
+  }
+
 }
