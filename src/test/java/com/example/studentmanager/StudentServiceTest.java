@@ -120,4 +120,27 @@ public class StudentServiceTest {
         sortedStudents.stream().map(Student::getId).toList());
   }
 
+  @Test
+  void shouldFindStudentsMatchingCustomCondition() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 17));
+    studentService.addStudent(new Student(1002, "李四", 20));
+    studentService.addStudent(new Student(1003, "王五", 22));
+
+    List<Student> matchedStudents =
+        studentService.findByCondition(student -> student.getAge() >= 20);
+
+    assertEquals(2, matchedStudents.size());
+    assertTrue(matchedStudents.stream().anyMatch(student -> student.getId() == 1002));
+    assertTrue(matchedStudents.stream().anyMatch(student -> student.getId() == 1003));
+  }
+
+  @Test
+  void shouldTreatEighteenYearOldStudentAsAdult() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 18));
+
+    assertEquals(1, studentService.findAdults().size());
+  }
+
 }

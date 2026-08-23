@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,7 @@ public class StudentService {
   }
 
   public List<Student> findByName(String keyword) {
-    List<Student> result = new ArrayList<>();
-    for (Student student : students.values()) {
-      if (student.getName().contains(keyword)) {
-        result.add(student);
-      }
-    }
-    return result;
+    return findByCondition(student -> student.getName().contains(keyword));
   }
 
   public boolean changeAge(int id, int age) {
@@ -66,15 +61,19 @@ public class StudentService {
   }
 
   public List<Student> findAdults() {
-    return students.values()
-        .stream()
-        .filter(student -> student.getAge() >= 18)
-        .toList();
+    return findByCondition(student -> student.getAge() >= 18);
   }
 
   public List<Student> findAllOrder(SortStrategy<Student> strategy) {
     List<Student> students = findAll();
     return strategy.sort(students);
+  }
+
+  public List<Student> findByCondition(Predicate<Student> condition) {
+    return students.values()
+        .stream()
+        .filter(condition)
+        .toList();
   }
 
 }
