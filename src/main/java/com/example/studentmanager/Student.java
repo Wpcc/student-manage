@@ -2,6 +2,7 @@ package com.example.studentmanager;
 
 /** 表示一个学生。 */
 public class Student extends Person implements Printable {
+  @DisplayField(label = "学号", order = 1)
   private final int id;
 
   public Student(int id, String name, int age) {

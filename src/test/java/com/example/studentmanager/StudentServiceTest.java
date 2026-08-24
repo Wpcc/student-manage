@@ -115,9 +115,23 @@ public class StudentServiceTest {
     studentService.addStudent(new Student(1003, "王五", 19));
 
     SortStrategy<Student> strategy = new AgeAscendingStrategy();
-    List<Student> sortedStudents = studentService.findAllOrder(strategy);
+    List<Student> sortedStudents = studentService.findAllSorted(strategy);
 
     assertEquals(List.of(1002, 1003, 1001),
+        sortedStudents.stream().map(Student::getId).toList());
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  void shouldKeepDeprecatedSortingMethodCompatible() {
+    StudentService studentService = new StudentService();
+    studentService.addStudent(new Student(1001, "张三", 20));
+    studentService.addStudent(new Student(1002, "李四", 18));
+
+    List<Student> sortedStudents =
+        studentService.findAllOrder(new AgeAscendingStrategy());
+
+    assertEquals(List.of(1002, 1001),
         sortedStudents.stream().map(Student::getId).toList());
   }
 
