@@ -14,8 +14,9 @@ public final class ReflectionFormatter {
 
   }
 
-  public static String formatAnnotatedFields(Object target) {
+  public static String formatAnnotatedFields(Object target, String delimiter) {
     Objects.requireNonNull(target, "target 不能为空");
+    Objects.requireNonNull(delimiter, "delimiter 不能为空");
 
     List<Field> annotatedFields = new ArrayList<>();
 
@@ -35,7 +36,11 @@ public final class ReflectionFormatter {
 
     return annotatedFields.stream()
         .map((Field field) -> readField(field, target))
-        .collect(Collectors.joining(", "));
+        .collect(Collectors.joining(delimiter));
+  }
+
+  public static String formatAnnotatedFields(Object target) {
+    return formatAnnotatedFields(target, ", ");
   }
 
   private static String readField(Field field, Object target) {
