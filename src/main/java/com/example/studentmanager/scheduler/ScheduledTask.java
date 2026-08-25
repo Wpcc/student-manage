@@ -8,7 +8,7 @@ public class ScheduledTask {
   private final String id;
   private final String description;
   private final LocalDateTime createdAt;
-  private TaskStatus status;
+  private volatile TaskStatus status;
 
   public ScheduledTask(String id, String description) {
     if (id == null || id.isBlank()) {
