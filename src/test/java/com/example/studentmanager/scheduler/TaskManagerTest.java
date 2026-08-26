@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
@@ -94,6 +98,50 @@ class TaskManagerTest {
 
       assertEquals(TaskStatus.FAILED, task.getStatus());
       assertThrows(NullPointerException.class, () -> manager.submit("空任务", null));
+    } finally {
+      manager.shutdown();
+    }
+  }
+
+  @Test
+  void shouldSupportConcurrentTaskSubmission() throws Exception {
+    TaskManager manager = new TaskManager();
+    ExecutorService callers = Executors.newFixedThreadPool(8);
+    CountDownLatch start = new CountDownLatch(1);
+    List<Future<ScheduledTask>> futures = new ArrayList<>();
+
+    try {
+      for (int i = 0; i < 20; i++) {
+        int taskNumber = i;
+        futures.add(callers.submit(() -> {
+          start.await();
+          return manager.submit("并发任务-" + taskNumber);
+        }));
+      }
+
+      start.countDown();
+      for (Future<ScheduledTask> future : futures) {
+        assertNotNull(future.get(1, TimeUnit.SECONDS));
+      }
+
+      assertEquals(20, manager.getTaskCount());
+    } finally {
+      callers.shutdownNow();
+      manager.shutdown();
+    }
+  }
+
+  @Test
+  void shouldFindTasksByStatus() {
+    TaskManager manager = new TaskManager();
+    ScheduledTask pending = manager.submit("等待任务");
+    ScheduledTask success = manager.submit("成功任务");
+    success.setStatus(TaskStatus.SUCCESS);
+
+    try {
+      assertEquals(List.of(pending), manager.findByStatus(TaskStatus.PENDING));
+      assertEquals(List.of(success), manager.findByStatus(TaskStatus.SUCCESS));
+      assertThrows(NullPointerException.class, () -> manager.findByStatus(null));
     } finally {
       manager.shutdown();
     }

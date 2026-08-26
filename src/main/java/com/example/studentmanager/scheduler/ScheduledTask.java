@@ -45,4 +45,5 @@ public class ScheduledTask {
     Objects.requireNonNull(status, "任务状态不能为空");
     this.status = status;
   }
+
 }

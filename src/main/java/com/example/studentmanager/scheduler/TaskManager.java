@@ -1,17 +1,17 @@
 package com.example.studentmanager.scheduler;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class TaskManager {
-  private final Map<String, ScheduledTask> tasks = new HashMap<>();
+  private final Map<String, ScheduledTask> tasks = new ConcurrentHashMap<>();
   private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
   public ScheduledTask submit(String description) {
@@ -70,4 +70,18 @@ public class TaskManager {
   public List<ScheduledTask> findAll() {
     return List.copyOf(tasks.values());
   }
+
+  public List<ScheduledTask> findByStatus(TaskStatus status) {
+    Objects.requireNonNull(status, "status 不能为空");
+
+    return tasks.values()
+        .stream()
+        .filter(task -> task.getStatus() == status)
+        .toList();
+  }
+
+  public int getTaskCount() {
+    return tasks.size();
+  }
+
 }
