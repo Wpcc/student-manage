@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -54,6 +56,7 @@ class TaskManagerTest {
 
     ScheduledTask task = new ScheduledTask("id", "描述");
     assertThrows(NullPointerException.class, () -> task.setStatus(null));
+    assertThrows(IllegalArgumentException.class, () -> task.markCompleted(TaskStatus.RUNNING));
   }
 
   @Test
@@ -142,6 +145,49 @@ class TaskManagerTest {
       assertEquals(List.of(pending), manager.findByStatus(TaskStatus.PENDING));
       assertEquals(List.of(success), manager.findByStatus(TaskStatus.SUCCESS));
       assertThrows(NullPointerException.class, () -> manager.findByStatus(null));
+    } finally {
+      manager.shutdown();
+    }
+  }
+
+  @Test
+  void shouldRecordCompletionTimeAndCleanExpiredCompletedTasks() {
+    TaskManager manager = new TaskManager();
+    ScheduledTask completed = manager.submit("已完成任务");
+    ScheduledTask pending = manager.submit("等待任务");
+    completed.markCompleted(TaskStatus.SUCCESS);
+
+    try {
+      assertNotNull(completed.getCompletedAt());
+      assertEquals(1, manager.cleanupCompletedBefore(LocalDateTime.now().plusSeconds(1)));
+      assertTrue(manager.findById(completed.getId()).isEmpty());
+      assertTrue(manager.findById(pending.getId()).isPresent());
+      assertEquals(0, manager.cleanupCompletedBefore(LocalDateTime.now()));
+      assertThrows(NullPointerException.class, () -> manager.cleanupCompletedBefore(null));
+    } finally {
+      manager.shutdown();
+    }
+  }
+
+  @Test
+  void shouldCleanCompletedTasksPeriodically() throws InterruptedException {
+    TaskManager manager = new TaskManager();
+    ScheduledTask completed = manager.submit("定时清理任务");
+    completed.markCompleted(TaskStatus.SUCCESS);
+
+    try {
+      manager.startCleanup(Duration.ZERO, Duration.ofMillis(10));
+
+      long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+      while (manager.getTaskCount() > 0 && System.nanoTime() < deadline) {
+        Thread.sleep(10);
+      }
+
+      assertEquals(0, manager.getTaskCount());
+      assertThrows(IllegalArgumentException.class,
+          () -> manager.startCleanup(Duration.ofSeconds(-1), Duration.ofSeconds(1)));
+      assertThrows(IllegalArgumentException.class,
+          () -> manager.startCleanup(Duration.ZERO, Duration.ZERO));
     } finally {
       manager.shutdown();
     }

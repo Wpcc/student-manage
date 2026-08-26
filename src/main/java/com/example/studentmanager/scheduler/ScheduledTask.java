@@ -8,6 +8,7 @@ public class ScheduledTask {
   private final String id;
   private final String description;
   private final LocalDateTime createdAt;
+  private volatile LocalDateTime completedAt;
   private volatile TaskStatus status;
 
   public ScheduledTask(String id, String description) {
@@ -37,6 +38,10 @@ public class ScheduledTask {
     return createdAt;
   }
 
+  public LocalDateTime getCompletedAt() {
+    return completedAt;
+  }
+
   public TaskStatus getStatus() {
     return status;
   }
@@ -44,6 +49,15 @@ public class ScheduledTask {
   public void setStatus(TaskStatus status) {
     Objects.requireNonNull(status, "任务状态不能为空");
     this.status = status;
+  }
+
+  public void markCompleted(TaskStatus status) {
+    if (status != TaskStatus.SUCCESS && status != TaskStatus.FAILED) {
+      throw new IllegalArgumentException("完成状态只能是 SUCCESS 或 FAILED");
+    }
+
+    this.status = status;
+    this.completedAt = LocalDateTime.now();
   }
 
 }
